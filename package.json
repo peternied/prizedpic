@@ -12,6 +12,7 @@
     "@prisma/adapter-pg": "^7.3.0",
     "@prisma/client": "^7.3.0",
     "@prisma/ppg": "^1.0.1",
+    "@vercel/analytics": "^1.6.1",
     "class-variance-authority": "^0.7.1",
     "cloudinary": "^2.9.0",
     "clsx": "^2.1.1",
