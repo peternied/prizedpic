@@ -15,10 +15,15 @@ export default function Home() {
             </p>
           </div>
 
-          <p className="max-w-2xl text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Share your finest moments with a community of photographers. Upload
-            your work, get feedback, and vote on the pictures that inspire you.
-          </p>
+          <div className="flex flex-col items-center gap-3">
+            <span className="inline-flex items-center rounded-full bg-gradient-to-r from-blue-600 to-purple-600 px-4 py-1.5 text-sm font-bold text-white shadow-lg animate-pulse">
+              Special for AIRFAM! 🎉
+            </span>
+            <p className="max-w-2xl text-lg leading-8 text-zinc-600 dark:text-zinc-400">
+              Share your finest moments with a community of photographers. Upload
+              your work, get feedback, and vote on the pictures that inspire you.
+            </p>
+          </div>
 
           <div className="flex flex-col gap-4 w-full sm:flex-row sm:justify-center pt-4">
             <a
