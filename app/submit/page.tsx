@@ -147,7 +147,7 @@ export default function SubmitPage() {
         <CldUploadWidget
           signatureEndpoint={signatureEndpoint}
           options={{
-            folder: "photo-contest",
+            folder: contestId,
             sources: ["local", "camera"],
             multiple: false,
             maxFiles: 1,

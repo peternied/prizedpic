@@ -1,4 +1,5 @@
 import Image from "next/image";
+import { Trophy, Medal, PartyPopper } from "lucide-react";
 
 export default function Home() {
   return (
@@ -32,6 +33,36 @@ export default function Home() {
             >
               Vote & Browse
             </a>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-8 pt-12 w-full max-w-2xl">
+            <div className="flex flex-col items-center gap-3">
+              <Trophy className="w-8 h-8 text-blue-600" strokeWidth={2} />
+              <div className="font-semibold text-black dark:text-white">
+                Overall
+              </div>
+              <p className="text-sm text-zinc-600 dark:text-zinc-400">
+                Rate the overall quality and impact
+              </p>
+            </div>
+            <div className="flex flex-col items-center gap-3">
+              <Medal className="w-8 h-8 text-purple-600" strokeWidth={2} />
+              <div className="font-semibold text-black dark:text-white">
+                Technical
+              </div>
+              <p className="text-sm text-zinc-600 dark:text-zinc-400">
+                Recognize technical excellence
+              </p>
+            </div>
+            <div className="flex flex-col items-center gap-3">
+              <PartyPopper className="w-8 h-8 text-amber-600" strokeWidth={2} />
+              <div className="font-semibold text-black dark:text-white">
+                Funny
+              </div>
+              <p className="text-sm text-zinc-600 dark:text-zinc-400">
+                Celebrate humor and creativity
+              </p>
+            </div>
           </div>
         </div>
 
