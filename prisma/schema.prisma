@@ -5,7 +5,7 @@
 // Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
 
 generator client {
-  provider   = "prisma-client"
+  provider = "prisma-client"
   output   = "../lib/generated/prisma"
 }
 
@@ -20,15 +20,15 @@ enum VoteType {
 }
 
 model Contest {
-  id          String   @id @default(cuid())
-  name        String
-  description String?
-  createdAt   DateTime @default(now())
+  id                  String    @id @default(cuid())
+  name                String
+  description         String?
+  createdAt           DateTime  @default(now())
   submissionsClosedAt DateTime?
-  endsAt      DateTime?
+  endsAt              DateTime?
 
-  photos      Photo[]
-  votes       Vote[]
+  photos Photo[]
+  votes  Vote[]
 }
 
 model Photo {
@@ -42,38 +42,29 @@ model Photo {
   submitterEmail String?
   submitterId    String?
 
-  contestId   String?
-  contest     Contest? @relation(fields: [contestId], references: [id])
+  contestId String?
+  contest   Contest? @relation(fields: [contestId], references: [id])
 
-  // Elo ranking
-  rating      Int      @default(1000)
-  wins        Int      @default(0)
-  losses      Int      @default(0)
-  battles     Int      @default(0)
-
-  votesWon    Vote[]   @relation("VotesWinner")
-  votesLost   Vote[]   @relation("VotesLoser")
+  votes Vote[]
 }
 
 model Vote {
-  id          String   @id @default(cuid())
-  createdAt   DateTime @default(now())
-  voteType    VoteType @default(OVERALL)
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  voteType  VoteType @default(OVERALL)
 
-  contestId   String?
-  contest     Contest? @relation(fields: [contestId], references: [id])
+  contestId String
+  contest   Contest @relation(fields: [contestId], references: [id])
 
-  winnerId    String
-  loserId     String
-  winner      Photo    @relation("VotesWinner", fields: [winnerId], references: [id])
-  loser       Photo    @relation("VotesLoser", fields: [loserId], references: [id])
+  photoId String
+  photo   Photo  @relation(fields: [photoId], references: [id])
 
-  voterId     String   // cookie id
-  ipHash      String?
-  uaHash      String?
+  voterId String // cookie id
+  ipHash  String?
+  uaHash  String?
 
+  @@unique([voterId, photoId, voteType, contestId]) // dedupe per vote type per contest
   @@index([createdAt])
   @@index([voterId])
   @@index([voteType])
-  @@unique([voterId, winnerId, loserId, voteType, contestId]) // dedupe per vote type per contest
 }

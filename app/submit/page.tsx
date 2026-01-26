@@ -4,8 +4,9 @@ import { useMemo, useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { CldUploadWidget } from "next-cloudinary";
 import { getUserId } from "@/lib/userIdGenerator";
-import { loadActiveContests } from "@/app/actions";
+import { loadContests } from "@/app/actions";
 import { ContestSelector } from "./components/ContestSelector";
+import { Contest } from "@/lib/generated/prisma/client";
 
 type UploadResult = {
   info?: {
@@ -13,8 +14,6 @@ type UploadResult = {
     secure_url?: string;
   };
 };
-
-type Contest = { id: string; name: string; submissionsClosedAt: Date | null };
 
 export default function SubmitPage() {
   const router = useRouter();
@@ -47,7 +46,7 @@ export default function SubmitPage() {
     const fetchContests = async () => {
       setLoadingContests(true);
       try {
-        const data = await loadActiveContests();
+        const data = await loadContests(false);
         setContests(data || []);
         if (data && data.length > 0) {
           setContestId(data[0].id);
@@ -121,7 +120,7 @@ export default function SubmitPage() {
       setTitle("");
       updateEmail("");
       setContestId("");
-      router.push("/vote");
+      router.push("/browse");
     } catch (e) {
       console.error("Error saving photo:", e);
       setError(e instanceof Error ? e.message : "Failed to save photo");

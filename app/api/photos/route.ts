@@ -51,3 +51,47 @@ export async function POST(req: Request) {
     );
   }
 }
+
+export async function GET(request: Request) {
+  try {
+    const { searchParams } = new URL(request.url);
+    const contestId = searchParams.get("contestId");
+
+    if (!contestId) {
+      return NextResponse.json(
+        { error: "contestId is required" },
+        { status: 400 }
+      );
+    }
+
+    const photos = await prisma.photo.findMany({
+      where: {
+        contestId,
+      },
+      select: {
+        id: true,
+        publicId: true,
+        secureUrl: true,
+        title: true,
+        votes: true,
+      },
+      orderBy: {
+        submittedAt: "desc",
+      },
+    });
+
+    // Transform to include userVoteType (null for now, can be enhanced with user tracking)
+    const photosWithVoteType = photos.map((photo) => ({
+      ...photo,
+      userVoteType: null,
+    }));
+
+    return NextResponse.json(photosWithVoteType);
+  } catch (error) {
+    console.error("Error fetching photos:", error);
+    return NextResponse.json(
+      { error: "Failed to fetch photos" },
+      { status: 500 }
+    );
+  }
+}

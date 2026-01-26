@@ -1,7 +1,14 @@
-import { Contest } from "@/lib/generated/prisma/client";
+type ContestListItem = {
+  id: string;
+  name: string;
+  description: string | null;
+  createdAt: Date;
+  submissionsClosedAt: Date | null;
+  endsAt: Date | null;
+};
 
 type ContestSelectorProps = {
-  contests: Contest[];
+  contests: ContestListItem[];
   contestId: string;
   loadingContests: boolean;
   onChange: (contestId: string) => void;
