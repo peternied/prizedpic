@@ -70,10 +70,6 @@ export default function Home() {
             </div>
           </div>
         </div>
-
-        <footer className="text-sm text-zinc-500 dark:text-zinc-400 pt-8">
-          © 2026 Peter Nied. All rights reserved.
-        </footer>
       </main>
     </div>
   );
