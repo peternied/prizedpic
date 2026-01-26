@@ -80,8 +80,7 @@ export async function GET(request: Request) {
       },
     });
 
-    // Transform to include userVoteType (null for now, can be enhanced with user tracking)
-    const photosWithVoteType = photos.map((photo) => ({
+    const photosWithVoteType = photos.map((photo: any) => ({
       ...photo,
       userVoteType: null,
     }));

@@ -7,20 +7,23 @@ import { ImageCard } from "./components/ImageCard";
 import { getUserId } from "@/lib/userIdGenerator";
 
 type Photo = {
-  id: string;
-  publicId: string;
-  secureUrl: string;
-  title: string | null;
-  totalVotes: {
-    OVERALL: number;
-    TECHNICAL: number;
-    FUNNY: number;
-  };
-  userVoteTypes: {
-    OVERALL: boolean;
-    TECHNICAL: boolean;
-    FUNNY: boolean;
-  };
+    id: string;
+    publicId: string;
+    secureUrl: string;
+    title: string | null;
+    submittedAt: Date;
+    submitterEmail: string | null;
+    submitterId: string | null;
+    totalVotes: {
+        OVERALL: number;
+        TECHNICAL: number;
+        FUNNY: number;
+    };
+    userVoteTypes: {
+        OVERALL: boolean;
+        TECHNICAL: boolean;
+        FUNNY: boolean;
+    };
 };
 
 type ContestListItem = {

@@ -131,5 +131,5 @@ export async function loadContestPhotosWithVotes(contestId: string, userId?: str
     orderBy: { submittedAt: "desc" },
   });
 
-  return photos.map((photo) => mapPhotoWithVotes(photo, userId));
+  return photos.map((photo: any) => mapPhotoWithVotes(photo, userId));
 }
