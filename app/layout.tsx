@@ -45,6 +45,15 @@ export default function RootLayout({
         <footer className="border-t bg-gray-50 mt-auto">
           <div className="container mx-auto px-4 py-6 text-center text-sm text-gray-600">
             © 2026 Peter Nied. All rights reserved.
+            {" · "}
+            <a 
+              href="https://github.com/peternied/prizedpic" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="hover:text-blue-600 transition-colors"
+            >
+              GitHub
+            </a>
           </div>
         </footer>
       </body>
