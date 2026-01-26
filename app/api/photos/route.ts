@@ -1,30 +1,42 @@
 import { NextResponse } from "next/server";
-import { prisma } from '../../../lib/prisma'
-
-type Body = {
-  publicId: string;
-  secureUrl: string;
-  title?: string;
-};
+import { prisma } from "@/lib/prisma";
 
 export async function POST(req: Request) {
   try {
-    const body = (await req.json()) as Partial<Body>;
-    console.log("[POST /api/photos] Request body:", body);
+    const {
+      publicId,
+      secureUrl,
+      title,
+      contestId,
+      submitterEmail,
+      submitterId,
+    } = await req.json();
 
-    if (!body.publicId || !body.secureUrl) {
+    console.log("[POST /api/photos] Request body:", {
+      publicId,
+      secureUrl,
+      title,
+      contestId,
+      submitterEmail,
+      submitterId,
+    });
+
+    if (!publicId || !secureUrl) {
       return NextResponse.json(
         { error: "publicId and secureUrl are required" },
         { status: 400 }
       );
     }
 
-    console.log("[POST /api/photos] Creating photo with publicId:", body.publicId);
+    console.log("[POST /api/photos] Creating photo with publicId:", publicId);
     const created = await prisma.photo.create({
       data: {
-        publicId: body.publicId,
-        secureUrl: body.secureUrl,
-        title: body.title?.trim() || null,
+        publicId,
+        secureUrl,
+        title: title?.trim() || null,
+        contestId: contestId || null,
+        submitterEmail: submitterEmail || null,
+        submitterId: submitterId || null,
       },
       select: { id: true },
     });

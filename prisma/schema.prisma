@@ -13,6 +13,24 @@ datasource db {
   provider = "postgresql"
 }
 
+enum VoteType {
+  OVERALL
+  TECHNICAL
+  FUNNY
+}
+
+model Contest {
+  id          String   @id @default(cuid())
+  name        String
+  description String?
+  createdAt   DateTime @default(now())
+  submissionsClosedAt DateTime?
+  endsAt      DateTime?
+
+  photos      Photo[]
+  votes       Vote[]
+}
+
 model Photo {
   id          String   @id @default(cuid())
   publicId    String   @unique // Cloudinary public_id
@@ -20,6 +38,12 @@ model Photo {
   title       String?
   submittedAt DateTime @default(now())
   active      Boolean  @default(true)
+
+  submitterEmail String?
+  submitterId    String?
+
+  contestId   String?
+  contest     Contest? @relation(fields: [contestId], references: [id])
 
   // Elo ranking
   rating      Int      @default(1000)
@@ -34,6 +58,10 @@ model Photo {
 model Vote {
   id          String   @id @default(cuid())
   createdAt   DateTime @default(now())
+  voteType    VoteType @default(OVERALL)
+
+  contestId   String?
+  contest     Contest? @relation(fields: [contestId], references: [id])
 
   winnerId    String
   loserId     String
@@ -46,5 +74,6 @@ model Vote {
 
   @@index([createdAt])
   @@index([voterId])
-  @@unique([voterId, winnerId, loserId]) // simple dedupe
+  @@index([voteType])
+  @@unique([voterId, winnerId, loserId, voteType, contestId]) // dedupe per vote type per contest
 }
