@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Trophy, Medal, PartyPopper } from "lucide-react";
+import { Trophy, Medal, PartyPopper, Info } from "lucide-react";
 
 
 type Photo = {
@@ -9,6 +9,9 @@ type Photo = {
     publicId: string;
     secureUrl: string;
     title: string | null;
+    submittedAt: Date;
+    submitterEmail: string | null;
+    submitterId: string | null;
     totalVotes: {
         OVERALL: number;
         TECHNICAL: number;
@@ -31,6 +34,7 @@ export function ImageCard({ photo, contestId, userId }: ImageCardProps) {
     const [photoState, setPhotoState] = useState(photo);
     const [voting, setVoting] = useState(false);
     const [error, setError] = useState<string | null>(null);
+    const [showDetails, setShowDetails] = useState(false);
 
     const handleVote = async (voteType: "OVERALL" | "TECHNICAL" | "FUNNY") => {
         setVoting(true);
@@ -164,7 +168,7 @@ export function ImageCard({ photo, contestId, userId }: ImageCardProps) {
 
 
     return (
-        <div className="rounded-lg border bg-card overflow-hidden shadow-sm hover:shadow-md transition-shadow">
+        <div className="rounded-lg border bg-card overflow-hidden shadow-sm hover:shadow-md transition-shadow relative">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
                 src={photoState.secureUrl}
@@ -173,11 +177,11 @@ export function ImageCard({ photo, contestId, userId }: ImageCardProps) {
             />
 
             <div className="p-4">
-                {photoState.title && (
-                    <h3 className="font-medium text-sm mb-3 line-clamp-2">
-                        {photoState.title}
+                <div className="h-12 mb-3">
+                    <h3 className="font-medium text-sm line-clamp-2">
+                        {photoState.title || "\u00A0"}
                     </h3>
-                )}
+                </div>
 
                 {error && <p className="text-xs text-red-600 mb-2">{error}</p>}
 
@@ -212,6 +216,27 @@ export function ImageCard({ photo, contestId, userId }: ImageCardProps) {
                         disabled={voting}
                     />
 
+                    <div className="relative">
+                        <button
+                            onClick={() => setShowDetails(!showDetails)}
+                            className="p-2 rounded-lg bg-white/70 hover:bg-white border border-gray-200 shadow-sm transition-colors"
+                            type="button"
+                            title="View uploader details"
+                        >
+                            <Info className="w-5 h-5 text-gray-600" />
+                        </button>
+                        
+                        {showDetails && (
+                            <div className="absolute bottom-full right-0 mb-2 p-3 bg-white border border-gray-200 rounded-lg shadow-lg text-xs whitespace-nowrap z-10">
+                                <div className="font-medium text-gray-900 mb-1">Uploader</div>
+                                <div className="text-gray-600">ID: {photoState.submitterId}</div>
+                                <div className="text-gray-600">{photoState.submitterEmail}</div>
+                                <div className="text-gray-500 mt-2 pt-2 border-t border-gray-100">
+                                    {new Date(photoState.submittedAt).toLocaleString()}
+                                </div>
+                            </div>
+                        )}
+                    </div>
                 </div>
             </div>
         </div>

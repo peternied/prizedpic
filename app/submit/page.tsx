@@ -140,7 +140,7 @@ export default function SubmitPage() {
       />
 
       <p className="mt-2 text-sm text-muted-foreground">
-        Upload your entry. After uploading and annotating it, it'll show up in battles.
+        Upload your entry. After uploading and annotating it, it'll show up in the browse page.
       </p>
 
       <div className="mt-6">

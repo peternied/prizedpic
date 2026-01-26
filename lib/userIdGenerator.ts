@@ -14,12 +14,12 @@ export function getUserId(): string {
     return "";
   }
 
-  const stored = sessionStorage.getItem("prizedpic_user_id");
+  const stored = localStorage.getItem("prizedpic_user_id");
   if (stored) {
     return stored;
   }
 
   const newId = generateUserIdFromUuid();
-  sessionStorage.setItem("prizedpic_user_id", newId);
+  localStorage.setItem("prizedpic_user_id", newId);
   return newId;
 }
