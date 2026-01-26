@@ -1,0 +1,50 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client"
+  output   = "../lib/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model Photo {
+  id          String   @id @default(cuid())
+  publicId    String   @unique // Cloudinary public_id
+  secureUrl   String
+  title       String?
+  submittedAt DateTime @default(now())
+  active      Boolean  @default(true)
+
+  // Elo ranking
+  rating      Int      @default(1000)
+  wins        Int      @default(0)
+  losses      Int      @default(0)
+  battles     Int      @default(0)
+
+  votesWon    Vote[]   @relation("VotesWinner")
+  votesLost   Vote[]   @relation("VotesLoser")
+}
+
+model Vote {
+  id          String   @id @default(cuid())
+  createdAt   DateTime @default(now())
+
+  winnerId    String
+  loserId     String
+  winner      Photo    @relation("VotesWinner", fields: [winnerId], references: [id])
+  loser       Photo    @relation("VotesLoser", fields: [loserId], references: [id])
+
+  voterId     String   // cookie id
+  ipHash      String?
+  uaHash      String?
+
+  @@index([createdAt])
+  @@index([voterId])
+  @@unique([voterId, winnerId, loserId]) // simple dedupe
+}
