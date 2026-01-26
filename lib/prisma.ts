@@ -1,25 +1,30 @@
-import { PrismaClient } from "../lib/generated/prisma";
+import "dotenv/config";
+import { Pool } from "pg";
+import { PrismaPg } from "@prisma/adapter-pg";
+import { PrismaClient } from "../lib/generated/prisma/client";
 
-const globalForPrisma = global as unknown as { prisma: PrismaClient };
+const connectionString = process.env.POSTGRES_PRISMA_URL;
 
-console.log("[Prisma] prisma config file present?", !!process.env.PRISMA_CONFIG_PATH);
-console.log("[Prisma] engine env:", {
-  PRISMA_CLIENT_ENGINE_TYPE: process.env.PRISMA_CLIENT_ENGINE_TYPE,
-  PRISMA_GENERATE_DATAPROXY: process.env.PRISMA_GENERATE_DATAPROXY,
-  PRISMA_DISABLE_ENGINE: process.env.PRISMA_DISABLE_ENGINE,
+if (!connectionString) {
+	throw new Error("POSTGRES_PRISMA_URL is not set");
+}
+
+const allowInvalidCerts =
+	process.env.POSTGRES_SSL_ACCEPT_INVALID_CERTS === "true" ||
+	(process.env.POSTGRES_SSL_MODE || "").toLowerCase() === "no-verify";
+
+if (allowInvalidCerts) {
+	// Loosen TLS validation only when explicitly requested (e.g., self-signed certs in dev).
+	process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
+}
+
+const pool = new Pool({
+	connectionString,
+	// Allow opting out of TLS verification when the Postgres server uses a self-signed cert.
+	ssl: allowInvalidCerts ? { rejectUnauthorized: false } : undefined,
 });
 
-export const prisma =
-  globalForPrisma.prisma ||
-  new PrismaClient({
-    log:
-      process.env.NODE_ENV === "development"
-        ? [
-            { level: "query", emit: "event" },
-            { level: "error", emit: "stdout" },
-            { level: "warn", emit: "stdout" },
-          ]
-        : ["error"],
-  });
+const adapter = new PrismaPg(pool);
+const prisma = new PrismaClient({ adapter });
 
-if (process.env.NODE_ENV !== "production") globalForPrisma.prisma = prisma;
+export { prisma };

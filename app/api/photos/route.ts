@@ -1,8 +1,6 @@
 import { NextResponse } from "next/server";
 import { prisma } from '../../../lib/prisma'
 
-export const runtime = "nodejs";
-
 type Body = {
   publicId: string;
   secureUrl: string;
@@ -10,18 +8,7 @@ type Body = {
 };
 
 export async function POST(req: Request) {
-  const url = process.env.POSTGRES_URL ?? "";
-  console.log("[db] DATABASE_URL host:", (() => {
-    try { return new URL(url).host; } catch { return "UNPARSEABLE"; }
-  })());
-  console.log("[db] DATABASE_URL protocol:", (() => {
-    try { return new URL(url).protocol; } catch { return "UNPARSEABLE"; }
-  })());
-
-
   try {
-    await prisma.$queryRaw`SELECT 1`;
-
     const body = (await req.json()) as Partial<Body>;
     console.log("[POST /api/photos] Request body:", body);
 
