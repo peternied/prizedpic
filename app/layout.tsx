@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
-import Link from "next/link";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -31,12 +30,9 @@ export default function RootLayout({
         <header className="border-b bg-white">
           <div className="container mx-auto px-4 py-4 flex justify-between items-center">
             <h1 className="text-2xl font-bold text-gray-900">Prized Pic</h1>
-            <Link
-              href="/submit"
-              className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium"
-            >
+            <button className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium">
               Submit Photo
-            </Link>
+            </button>
           </div>
         </header>
 
@@ -44,7 +40,7 @@ export default function RootLayout({
 
         <footer className="border-t bg-gray-50 mt-auto">
           <div className="container mx-auto px-4 py-6 text-center text-sm text-gray-600">
-            <p>Created by Peter Nied • Copyright © 2026</p>
+            © 2026 Peter Nied. All rights reserved.
           </div>
         </footer>
       </body>
