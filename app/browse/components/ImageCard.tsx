@@ -132,7 +132,7 @@ export function ImageCard({ photo, contestId, userId }: ImageCardProps) {
                 title={iconTitle}
                 className={[
                     // base
-                    "group flex items-center gap-2 px-3 py-2 rounded-lg border transition",
+                    "group flex items-center gap-1 px-2 py-2 rounded-lg border transition",
                     "bg-white/70 border-gray-200 text-gray-600",
                     "hover:bg-white hover:border-gray-300",
                     "disabled:opacity-50 disabled:cursor-not-allowed",
@@ -216,7 +216,7 @@ export function ImageCard({ photo, contestId, userId }: ImageCardProps) {
                         disabled={voting}
                     />
 
-                    <div className="relative">
+                    <div>
                         <button
                             onClick={() => setShowDetails(!showDetails)}
                             className="p-2 rounded-lg bg-white/70 hover:bg-white border border-gray-200 shadow-sm transition-colors"
