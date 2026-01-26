@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { loadContests, loadContestPhotosWithVotes } from "@/app/actions";
 import { ContestSelector } from "@/app/submit/components/ContestSelector";
 import { ImageCard } from "./components/ImageCard";
+import { getUserId } from "@/lib/userIdGenerator";
 
 type Photo = {
   id: string;
@@ -38,6 +39,7 @@ export default function BrowsePage() {
   const [photos, setPhotos] = useState<Photo[]>([]);
   const [loadingPhotos, setLoadingPhotos] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [userId, setUserId] = useState("");
 
   useEffect(() => {
     const fetchContests = async () => {
@@ -79,32 +81,9 @@ export default function BrowsePage() {
     fetchPhotos();
   }, [contestId]);
 
-  const handleVote = async (photoId: string, voteType: "OVERALL" | "TECHNICAL" | "FUNNY") => {
-    try {
-      const response = await fetch("/api/votes", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          photoId,
-          voteType,
-          contestId,
-        }),
-      });
-
-      if (!response.ok) throw new Error("Failed to vote");
-
-      const updatedPhoto = await response.json();
-      
-      setPhotos((prev) =>
-        prev.map((photo) =>
-          photo.id === photoId ? updatedPhoto : photo
-        )
-      );
-    } catch (err) {
-      console.error("Error voting:", err);
-      setError(err instanceof Error ? err.message : "Failed to vote");
-    }
-  };
+  useEffect(() => {
+    setUserId(getUserId());
+  }, []);
 
   return (
     <main className="mx-auto max-w-7xl p-6">
@@ -135,7 +114,8 @@ export default function BrowsePage() {
             <ImageCard
               key={photo.id}
               photo={photo}
-              onVote={handleVote}
+              contestId={contestId}
+              userId={userId}
             />
           ))}
         </div>

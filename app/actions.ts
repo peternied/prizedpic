@@ -54,6 +54,33 @@ export async function loadPhotosForContest(contestId: string) {
   return photos;
 }
 
+// Shared mapper for consistent photo+votes shape
+function mapPhotoWithVotes(photo: any, userId?: string) {
+  const userVotes = userId ? photo.votes.filter((vote: any) => vote.voterId === userId) : [];
+  const userVoteTypes = {
+    OVERALL: userVotes.some((v: any) => v.voteType === "OVERALL"),
+    TECHNICAL: userVotes.some((v: any) => v.voteType === "TECHNICAL"),
+    FUNNY: userVotes.some((v: any) => v.voteType === "FUNNY"),
+  };
+
+  return {
+    id: photo.id,
+    publicId: photo.publicId,
+    secureUrl: photo.secureUrl,
+    title: photo.title,
+    submitterEmail: photo.submitterEmail,
+    submitterId: photo.submitterId,
+    contestId: photo.contestId,
+    submittedAt: photo.submittedAt,
+    totalVotes: {
+      OVERALL: photo.votes.filter((v: any) => v.voteType === "OVERALL").length,
+      TECHNICAL: photo.votes.filter((v: any) => v.voteType === "TECHNICAL").length,
+      FUNNY: photo.votes.filter((v: any) => v.voteType === "FUNNY").length,
+    },
+    userVoteTypes,
+  };
+}
+
 export async function getPhotoVotes(photoId: string, userId?: string) {
   "use server";
 
@@ -63,31 +90,14 @@ export async function getPhotoVotes(photoId: string, userId?: string) {
 
   const photo = await prisma.photo.findUnique({
     where: { id: photoId },
-    include: {
-      votes: true,
-    },
+    include: { votes: true },
   });
 
   if (!photo) {
     throw new Error("Photo not found");
   }
 
-  const userVotes = photo.votes.filter((vote) => vote.voterId === userId);
-  const userVotesByType = {
-    OVERALL: userVotes.some((v) => v.voteType === "OVERALL"),
-    TECHNICAL: userVotes.some((v) => v.voteType === "TECHNICAL"),
-    FUNNY: userVotes.some((v) => v.voteType === "FUNNY"),
-  };
-
-  return {
-    photoId: photo.id,
-    totalVotes: {
-      OVERALL: photo.votes.filter((v) => v.voteType === "OVERALL").length,
-      TECHNICAL: photo.votes.filter((v) => v.voteType === "TECHNICAL").length,
-      FUNNY: photo.votes.filter((v) => v.voteType === "FUNNY").length,
-    },
-    userVoteTypes: userVotesByType,
-  };
+  return mapPhotoWithVotes(photo, userId);
 }
 
 export async function loadContests(includeClosed: boolean) {
@@ -115,44 +125,11 @@ export async function loadContestPhotosWithVotes(contestId: string, userId?: str
     throw new Error("Contest ID is required");
   }
 
-  // Fetch photos for contest
   const photos = await prisma.photo.findMany({
-    where: {
-      contestId,
-    },
-    include: {
-      votes: true,
-    },
-    orderBy: {
-      submittedAt: "desc",
-    },
+    where: { contestId },
+    include: { votes: true },
+    orderBy: { submittedAt: "desc" },
   });
 
-  return photos.map((photo) => {
-    const userVotes = userId
-      ? photo.votes.filter((vote) => vote.voterId === userId)
-      : [];
-    const userVoteTypes = {
-      OVERALL: userVotes.some((v) => v.voteType === "OVERALL"),
-      TECHNICAL: userVotes.some((v) => v.voteType === "TECHNICAL"),
-      FUNNY: userVotes.some((v) => v.voteType === "FUNNY"),
-    };
-
-    return {
-      id: photo.id,
-      publicId: photo.publicId,
-      secureUrl: photo.secureUrl,
-      title: photo.title,
-      submitterEmail: photo.submitterEmail,
-      submitterId: photo.submitterId,
-      contestId: photo.contestId,
-      submittedAt: photo.submittedAt,
-      totalVotes: {
-        OVERALL: photo.votes.filter((v) => v.voteType === "OVERALL").length,
-        TECHNICAL: photo.votes.filter((v) => v.voteType === "TECHNICAL").length,
-        FUNNY: photo.votes.filter((v) => v.voteType === "FUNNY").length,
-      },
-      userVoteTypes,
-    };
-  });
+  return photos.map((photo) => mapPhotoWithVotes(photo, userId));
 }

@@ -54,11 +54,7 @@ export async function POST(request: Request) {
     // Get updated photo votes using the action
     const voteData = await getPhotoVotes(photoId, userId);
 
-    return NextResponse.json({
-      id: voteData.photoId,
-      totalVotes: voteData.totalVotes,
-      userVoteTypes: voteData.userVoteTypes,
-    });
+    return NextResponse.json(voteData);
   } catch (error) {
     console.error("Error processing vote:", error);
     return NextResponse.json(
