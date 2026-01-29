@@ -64,14 +64,18 @@ export default function BrowsePage() {
   }, []);
 
   useEffect(() => {
-    if (!contestId) return;
+    setUserId(getUserId());
+  }, []);
+
+  useEffect(() => {
+    if (!contestId || !userId) return;
 
     const fetchPhotos = async () => {
       setLoadingPhotos(true);
       setError(null);
       try {
         // Use new action to get photos + votes + user vote status
-        const data = await loadContestPhotosWithVotes(contestId);
+        const data = await loadContestPhotosWithVotes(contestId, userId);
         setPhotos(data);
       } catch (err) {
         console.error("Error loading photos:", err);
@@ -82,11 +86,7 @@ export default function BrowsePage() {
     };
 
     fetchPhotos();
-  }, [contestId]);
-
-  useEffect(() => {
-    setUserId(getUserId());
-  }, []);
+  }, [contestId, userId]);
 
   return (
     <main className="mx-auto max-w-7xl p-6">
@@ -104,8 +104,11 @@ export default function BrowsePage() {
       )}
 
       {loadingPhotos ? (
-        <div className="mt-8 text-center text-muted-foreground">
-          Loading photos...
+        <div className="mt-8 flex justify-center items-center py-12">
+          <div className="flex flex-col items-center gap-4">
+            <div className="w-12 h-12 border-4 border-gray-300 border-t-gray-900 rounded-full animate-spin"></div>
+            <p className="text-muted-foreground">Loading photos...</p>
+          </div>
         </div>
       ) : photos.length === 0 ? (
         <div className="mt-8 text-center text-muted-foreground">

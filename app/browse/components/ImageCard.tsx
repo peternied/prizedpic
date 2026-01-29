@@ -107,18 +107,24 @@ export function ImageCard({ photo, contestId, userId }: ImageCardProps) {
         const colorClasses: Record<typeof color, { text: string; ring: string; shadow: string }> = {
             blue: {
                 text: "text-blue-600",
+                bg: "bg-blue-50",
+                border: "border-blue-200",
+                hover: "hover:bg-blue-100 hover:border-blue-300",
                 ring: "ring-blue-300",
-                shadow: "shadow-blue-200/60",
             },
             purple: {
                 text: "text-purple-600",
+                bg: "bg-purple-50",
+                border: "border-purple-200",
+                hover: "hover:bg-purple-100 hover:border-purple-300",
                 ring: "ring-purple-300",
-                shadow: "shadow-purple-200/60",
             },
             amber: {
                 text: "text-amber-600",
+                bg: "bg-amber-50",
+                border: "border-amber-200",
+                hover: "hover:bg-amber-100 hover:border-amber-300",
                 ring: "ring-amber-300",
-                shadow: "shadow-amber-200/60",
             },
         };
 
@@ -132,23 +138,29 @@ export function ImageCard({ photo, contestId, userId }: ImageCardProps) {
                 title={iconTitle}
                 className={[
                     // base
-                    "group flex items-center gap-1 px-2 py-2 rounded-lg border transition",
-                    "bg-white/70 border-gray-200 text-gray-600",
-                    "hover:bg-white hover:border-gray-300",
+                    "group flex items-center gap-2 px-3 py-2.5 rounded-lg border transition font-medium",
+                    "cursor-pointer",
                     "disabled:opacity-50 disabled:cursor-not-allowed",
 
                     // focus
                     "focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-gray-300",
 
+                    // inactive state
+                    !active ? [
+                        "bg-white border-gray-200 text-gray-600",
+                        "hover:bg-gray-50 hover:border-gray-300",
+                    ].join(" ") : "",
+
                     // active state (voted)
                     active
                         ? [
                             c.text,
+                            c.bg,
+                            c.border,
+                            c.hover,
                             "ring-1",
                             c.ring,
-                            "shadow-sm", // base shadow
-                            `shadow-[0_0_0_3px_var(--tw-shadow-color)]`, // soft glow
-                            c.shadow,
+                            "shadow-sm",
                         ].join(" ")
                         : "",
                 ].join(" ")}
@@ -157,9 +169,7 @@ export function ImageCard({ photo, contestId, userId }: ImageCardProps) {
                     <VoteIcon type={type} voted={voted} />
                 </span>
 
-                <span className="mx-1 text-gray-200 select-none">|</span>
-
-                <span className={`text-sm tabular-nums ${active ? c.text : "text-gray-500"}`}>
+                <span className={`text-sm font-semibold tabular-nums ${active ? c.text : "text-gray-500"}`}>
                     {count}
                 </span>
             </button>
@@ -216,7 +226,7 @@ export function ImageCard({ photo, contestId, userId }: ImageCardProps) {
                         disabled={voting}
                     />
 
-                    <div>
+                    <div className="relative">
                         <button
                             onClick={() => setShowDetails(!showDetails)}
                             className="p-2 rounded-lg bg-white/70 hover:bg-white border border-gray-200 shadow-sm transition-colors"
