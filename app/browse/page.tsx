@@ -103,7 +103,14 @@ export default function BrowsePage() {
         <p className="mt-3 text-sm text-red-600">{error}</p>
       )}
 
-      {loadingPhotos ? (
+      {loadingContests ? (
+        <div className="mt-8 flex justify-center items-center py-12">
+          <div className="flex flex-col items-center gap-4">
+            <div className="w-12 h-12 border-4 border-gray-300 border-t-gray-900 rounded-full animate-spin"></div>
+            <p className="text-muted-foreground">Loading contests...</p>
+          </div>
+        </div>
+      ) : loadingPhotos ? (
         <div className="mt-8 flex justify-center items-center py-12">
           <div className="flex flex-col items-center gap-4">
             <div className="w-12 h-12 border-4 border-gray-300 border-t-gray-900 rounded-full animate-spin"></div>

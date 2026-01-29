@@ -104,7 +104,7 @@ export function ImageCard({ photo, contestId, userId }: ImageCardProps) {
     }) => {
         const active = voted && !disabled;
 
-        const colorClasses: Record<typeof color, { text: string; ring: string; shadow: string }> = {
+        const colorClasses: Record<typeof color, { text: string; bg: string; border: string; hover: string; ring: string }> = {
             blue: {
                 text: "text-blue-600",
                 bg: "bg-blue-50",
