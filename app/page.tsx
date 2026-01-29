@@ -1,11 +1,36 @@
 import Image from "next/image";
-import { Trophy, Medal, PartyPopper } from "lucide-react";
+import { Trophy, Medal, PartyPopper, Sparkles } from "lucide-react";
 
 export default function Home() {
   return (
     <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-zinc-50 to-zinc-100 font-sans dark:from-black dark:to-zinc-950">
       <main className="flex min-h-screen w-full max-w-4xl flex-col items-center justify-between py-20 px-6 sm:px-16">
         <div className="flex-1 flex flex-col items-center justify-center gap-12 text-center">
+          
+          {/* What's New Section */}
+          <div className="w-full max-w-2xl rounded-2xl border-2 border-blue-200 bg-gradient-to-br from-blue-50 to-purple-50 p-6 shadow-lg dark:border-blue-800 dark:from-blue-950/50 dark:to-purple-950/50">
+            <div className="flex items-center justify-center gap-2 mb-4">
+              <Sparkles className="w-6 h-6 text-blue-600 dark:text-blue-400" />
+              <h2 className="text-2xl font-bold text-blue-900 dark:text-blue-200">
+                What&apos;s New
+              </h2>
+              <Sparkles className="w-6 h-6 text-blue-600 dark:text-blue-400" />
+            </div>
+            <div className="space-y-3 text-left">
+              <div className="flex items-start gap-3">
+                <span className="text-lg">✨</span>
+                <p className="text-sm text-zinc-700 dark:text-zinc-300">
+                  <strong>Enhanced voting buttons</strong> - Cleaner design with improved visual feedback and colored backgrounds when voted
+                </p>
+              </div>
+              <div className="flex items-start gap-3">
+                <span className="text-lg">🎨</span>
+                <p className="text-sm text-zinc-700 dark:text-zinc-300">
+                  <strong>Better UX on browse page</strong> - Added loading spinner and smoother interactions
+                </p>
+              </div>
+            </div>
+          </div>
           <div className="flex flex-col gap-4">
             <h1 className="text-5xl sm:text-6xl font-bold tracking-tight text-black dark:text-white">
               Prized Pic
