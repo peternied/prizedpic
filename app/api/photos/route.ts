@@ -80,13 +80,13 @@ export async function GET(request: Request) {
       },
     });
 
-    const photosWithVoteType = photos.map((photo: any) => ({
+    const photosWithVoteType = photos.map((photo: unknown) => ({
       ...photo,
       userVoteType: null,
     }));
 
     return NextResponse.json(photosWithVoteType);
-  } catch (error) {
+  } catch (error: unknown) {
     console.error("Error fetching photos:", error);
     return NextResponse.json(
       { error: "Failed to fetch photos" },

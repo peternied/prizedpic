@@ -21,7 +21,7 @@ export default function SubmitPage() {
   const [title, setTitle] = useState("");
   const [email, setEmail] = useState("");
   const [userId, setUserId] = useState("");
-  const [uploading, setUploading] = useState(false);
+  const [uploading] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [uploadedUrl, setUploadedUrl] = useState<string | null>(null);
   const [uploadedPublicId, setUploadedPublicId] = useState<string | null>(null);
@@ -141,7 +141,7 @@ export default function SubmitPage() {
       />
 
       <p className="mt-2 text-sm text-muted-foreground">
-        Upload your entry. After uploading and annotating it, it'll show up in the browse page.
+        Upload your entry. After uploading and annotating it, it&apos;ll show up in the browse page.
       </p>
 
       <div className="mt-6">
@@ -270,6 +270,8 @@ export default function SubmitPage() {
           </div>
         )}
       </div>
+
+      <p className="text-gray-600 mb-6">Share your photography with the world. Submit your best work and let the community decide what&apos;s picture of the day!</p>
     </main>
   );
 }

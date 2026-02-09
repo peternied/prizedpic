@@ -17,7 +17,7 @@ export async function POST(req: Request) {
   const timestamp = clientParams.timestamp || Math.round(Date.now() / 1000);
 
   // Sign the exact parameters the client is sending
-  const paramsToSign: Record<string, any> = {
+  const paramsToSign: Record<string, unknown> = {
     ...clientParams,
     timestamp,
   };

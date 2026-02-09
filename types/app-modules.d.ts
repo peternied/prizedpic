@@ -1,9 +1,9 @@
 declare module "../app/page" {
-  const Component: any
+  const Component: React.ComponentType<Record<string, unknown>>
   export default Component
 }
 
 declare module "../app/layout" {
-  const Layout: any
+  const Layout: React.ComponentType<Record<string, unknown>>
   export default Layout
 }

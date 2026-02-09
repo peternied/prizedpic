@@ -1,5 +1,5 @@
-import Image from "next/image";
 import { Trophy, Medal, PartyPopper, Sparkles } from "lucide-react";
+import Link from 'next/link';
 
 export default function Home() {
   return (
@@ -51,18 +51,12 @@ export default function Home() {
           </div>
 
           <div className="flex flex-col gap-4 w-full sm:flex-row sm:justify-center pt-4">
-            <a
-              className="flex h-14 items-center justify-center rounded-lg bg-black px-8 text-white font-semibold transition-colors hover:bg-zinc-800 dark:bg-white dark:text-black dark:hover:bg-zinc-200"
-              href="/submit"
-            >
+            <Link href="/submit" className="flex h-14 items-center justify-center rounded-lg bg-black px-8 text-white font-semibold transition-colors hover:bg-zinc-800 dark:bg-white dark:text-black dark:hover:bg-zinc-200">
               Upload Photo
-            </a>
-            <a
-              className="flex h-14 items-center justify-center rounded-lg border-2 border-black px-8 font-semibold transition-colors hover:bg-black hover:text-white dark:border-white dark:hover:bg-white dark:hover:text-black"
-              href="/browse"
-            >
-              Vote & Browse
-            </a>
+            </Link>
+            <Link href="/browse/" className="inline-block bg-white text-blue-600 px-8 py-3 rounded-lg font-semibold hover:bg-blue-50 transition-colors">
+              Browse Gallery
+            </Link>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-8 pt-12 w-full max-w-2xl">

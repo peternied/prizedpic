@@ -29,8 +29,8 @@ export async function submitPhoto({
       },
     });
     return photo;
-  } catch (error) {
-    console.error("Error saving photo:", error);
+  } catch (error: unknown) {
+    console.error("Error saving photo:", error instanceof Error ? error.message : "Unknown error");
     throw new Error("Failed to save photo");
   }
 }
@@ -55,7 +55,7 @@ export async function loadPhotosForContest(contestId: string) {
 }
 
 // Shared mapper for consistent photo+votes shape
-function mapPhotoWithVotes(photo: any, userId?: string) {
+function mapPhotoWithVotes(photo: Photo, userId?: string) {
   const userVotes = userId ? photo.votes.filter((vote: any) => vote.voterId === userId) : [];
   const userVoteTypes = {
     OVERALL: userVotes.some((v: any) => v.voteType === "OVERALL"),
@@ -112,8 +112,8 @@ export async function loadContests(includeClosed: boolean) {
       },
     });
     return contests;
-  } catch (error) {
-    console.error("Error loading contests:", error);
+  } catch (error: unknown) {
+    console.error("Error loading contests:", error instanceof Error ? error.message : "Unknown error");
     throw new Error("Failed to load contests");
   }
 }
@@ -156,3 +156,28 @@ export async function getContestInfo(contestId: string) {
     isClosed: contest.endsAt ? new Date() > contest.endsAt : false,
   };
 }
+
+// Types
+type Photo = {
+  id: string;
+  publicId: string;
+  secureUrl: string;
+  title: string;
+  submitterEmail: string;
+  submitterId: string;
+  contestId: string;
+  submittedAt: Date;
+  votes: Vote[];
+};
+
+type Vote = {
+  voterId: string;
+  voteType: "OVERALL" | "TECHNICAL" | "FUNNY";
+};
+
+type Contest = {
+  id: string;
+  name: string;
+  endsAt: Date;
+  isClosed: boolean;
+};
