@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { loadContests, loadContestPhotosWithVotes } from "@/app/actions";
+import { loadContests, loadContestPhotosWithVotes, getContestInfo } from "@/app/actions";
 import { ContestSelector } from "@/app/submit/components/ContestSelector";
 import { ImageCard } from "./components/ImageCard";
 import { getUserId } from "@/lib/userIdGenerator";
@@ -35,11 +35,19 @@ type ContestListItem = {
   endsAt: Date | null;
 };
 
+type ContestInfo = {
+    id: string;
+    name: string;
+    endsAt: Date | null;
+    isClosed: boolean;
+};
+
 export default function BrowsePage() {
   const [contests, setContests] = useState<ContestListItem[]>([]);
   const [contestId, setContestId] = useState("");
   const [loadingContests, setLoadingContests] = useState(false);
   const [photos, setPhotos] = useState<Photo[]>([]);
+  const [contestInfo, setContestInfo] = useState<ContestInfo | null>(null);
   const [loadingPhotos, setLoadingPhotos] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [userId, setUserId] = useState("");
@@ -70,13 +78,17 @@ export default function BrowsePage() {
   useEffect(() => {
     if (!contestId || !userId) return;
 
-    const fetchPhotos = async () => {
+    const fetchPhotosAndContest = async () => {
       setLoadingPhotos(true);
       setError(null);
       try {
-        // Use new action to get photos + votes + user vote status
-        const data = await loadContestPhotosWithVotes(contestId, userId);
-        setPhotos(data);
+        // Fetch photos and contest info in parallel
+        const [photosData, infoData] = await Promise.all([
+          loadContestPhotosWithVotes(contestId, userId),
+          getContestInfo(contestId),
+        ]);
+        setPhotos(photosData);
+        setContestInfo(infoData);
       } catch (err) {
         console.error("Error loading photos:", err);
         setError(err instanceof Error ? err.message : "Failed to load photos");
@@ -85,7 +97,7 @@ export default function BrowsePage() {
       }
     };
 
-    fetchPhotos();
+    fetchPhotosAndContest();
   }, [contestId, userId]);
 
   return (
@@ -129,6 +141,7 @@ export default function BrowsePage() {
               photo={photo}
               contestId={contestId}
               userId={userId}
+              contestClosed={contestInfo?.isClosed ?? false}
             />
           ))}
         </div>

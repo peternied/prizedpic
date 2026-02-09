@@ -2,6 +2,7 @@
 
 import { useMemo, useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import Image from "next/image";
 import { CldUploadWidget } from "next-cloudinary";
 import { getUserId } from "@/lib/userIdGenerator";
 import { loadContests } from "@/app/actions";
@@ -168,7 +169,9 @@ export default function SubmitPage() {
 
             setError(null);
             setUploadedPublicId(publicId);
-            setUploadedUrl(secureUrl);
+            // Add Cloudinary transformation to scale down to 500x500 max while preserving aspect ratio
+            const transformedUrl = secureUrl.replace("/upload/", "/upload/c_fit,w_500,h_500/");
+            setUploadedUrl(transformedUrl);
           }}
           onError={(e) => {
             console.error("CldUploadWidget error:", e);
@@ -196,12 +199,15 @@ export default function SubmitPage() {
         {uploadedUrl && (
           <div className="mt-6 space-y-4">
             <p className="text-sm font-medium">Uploaded ✅</p>
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              src={uploadedUrl}
-              alt="Uploaded preview"
-              className="w-full rounded-lg border"
-            />
+            <div className="relative w-full max-w-md">
+              <Image
+                src={uploadedUrl}
+                alt="Uploaded preview"
+                width={500}
+                height={500}
+                className="w-full h-auto rounded-lg border"
+              />
+            </div>
 
             <div className="space-y-3">
               <div>

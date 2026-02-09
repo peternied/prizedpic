@@ -1,42 +1,35 @@
 "use client";
 
 import { useState } from "react";
-import { Trophy, Medal, PartyPopper, Info } from "lucide-react";
+import Image from "next/image";
+import Link from "next/link";
+import { Info } from "lucide-react";
+import { VoteButtonsContainer, VoteType, PhotoVoteState } from "./VoteButtons";
 
 
-type Photo = {
-    id: string;
+type Photo = PhotoVoteState & {
     publicId: string;
     secureUrl: string;
     title: string | null;
     submittedAt: Date;
     submitterEmail: string | null;
     submitterId: string | null;
-    totalVotes: {
-        OVERALL: number;
-        TECHNICAL: number;
-        FUNNY: number;
-    };
-    userVoteTypes: {
-        OVERALL: boolean;
-        TECHNICAL: boolean;
-        FUNNY: boolean;
-    };
 };
 
 type ImageCardProps = {
     photo: Photo;
     contestId: string;
     userId: string;
+    contestClosed?: boolean;
 };
 
-export function ImageCard({ photo, contestId, userId }: ImageCardProps) {
+export function ImageCard({ photo, contestId, userId, contestClosed = false }: ImageCardProps) {
     const [photoState, setPhotoState] = useState(photo);
     const [voting, setVoting] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [showDetails, setShowDetails] = useState(false);
 
-    const handleVote = async (voteType: "OVERALL" | "TECHNICAL" | "FUNNY") => {
+    const handleVote = async (voteType: VoteType) => {
         setVoting(true);
         setError(null);
         try {
@@ -66,125 +59,30 @@ export function ImageCard({ photo, contestId, userId }: ImageCardProps) {
         }
     };
 
-    const VoteIcon = ({
-        type,
-        voted,
-    }: {
-        type: "OVERALL" | "TECHNICAL" | "FUNNY";
-        voted: boolean;
-    }) => {
-        const className = `w-5 h-5 ${voted ? "opacity-100" : "opacity-70"}`;
-
-        switch (type) {
-            case "OVERALL":
-                return <Trophy className={className} strokeWidth={2} aria-hidden="true" />;
-            case "TECHNICAL":
-                return <Medal className={className} strokeWidth={2} aria-hidden="true" />;
-            case "FUNNY":
-                return <PartyPopper className={className} strokeWidth={2} aria-hidden="true" />;
-        }
-    };
-
-    const VoteButton = ({
-        type,
-        voted,
-        count,
-        color,       // e.g. "blue" | "purple" | "amber"
-        iconTitle,
-        onClick,
-        disabled,
-    }: {
-        type: "OVERALL" | "TECHNICAL" | "FUNNY";
-        voted: boolean;
-        count: number;
-        color: "blue" | "purple" | "amber";
-        iconTitle: string;
-        onClick: () => void;
-        disabled: boolean;
-    }) => {
-        const active = voted && !disabled;
-
-        const colorClasses: Record<typeof color, { text: string; bg: string; border: string; hover: string; ring: string }> = {
-            blue: {
-                text: "text-blue-600",
-                bg: "bg-blue-50",
-                border: "border-blue-200",
-                hover: "hover:bg-blue-100 hover:border-blue-300",
-                ring: "ring-blue-300",
-            },
-            purple: {
-                text: "text-purple-600",
-                bg: "bg-purple-50",
-                border: "border-purple-200",
-                hover: "hover:bg-purple-100 hover:border-purple-300",
-                ring: "ring-purple-300",
-            },
-            amber: {
-                text: "text-amber-600",
-                bg: "bg-amber-50",
-                border: "border-amber-200",
-                hover: "hover:bg-amber-100 hover:border-amber-300",
-                ring: "ring-amber-300",
-            },
-        };
-
-        const c = colorClasses[color];
-
-        return (
-            <button
-                onClick={onClick}
-                disabled={disabled}
-                type="button"
-                title={iconTitle}
-                className={[
-                    // base
-                    "group flex items-center gap-2 px-3 py-2.5 rounded-lg border transition font-medium",
-                    "cursor-pointer",
-                    "disabled:opacity-50 disabled:cursor-not-allowed",
-
-                    // focus
-                    "focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-gray-300",
-
-                    // inactive state
-                    !active ? [
-                        "bg-white border-gray-200 text-gray-600",
-                        "hover:bg-gray-50 hover:border-gray-300",
-                    ].join(" ") : "",
-
-                    // active state (voted)
-                    active
-                        ? [
-                            c.text,
-                            c.bg,
-                            c.border,
-                            c.hover,
-                            "ring-1",
-                            c.ring,
-                            "shadow-sm",
-                        ].join(" ")
-                        : "",
-                ].join(" ")}
-            >
-                <span className={active ? c.text : "text-gray-500"}>
-                    <VoteIcon type={type} voted={voted} />
-                </span>
-
-                <span className={`text-sm font-semibold tabular-nums ${active ? c.text : "text-gray-500"}`}>
-                    {count}
-                </span>
-            </button>
+    // Generate thumbnail URL with Cloudinary transformations
+    const generateThumbnailUrl = (secureUrl: string) => {
+        return secureUrl.replace(
+            '/upload/',
+            '/upload/w_500,h_500,c_fill,q_auto,f_auto/'
         );
     };
 
+    const thumbnailUrl = generateThumbnailUrl(photoState.secureUrl);
 
     return (
         <div className="rounded-lg border bg-card overflow-hidden shadow-sm hover:shadow-md transition-shadow relative">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-                src={photoState.secureUrl}
-                alt={photoState.title || "Contest photo"}
-                className="w-full aspect-square object-cover"
-            />
+            <div className="relative">
+                <Link href={`/browse/${contestId}/${photo.id}`}>
+                    <Image
+                        src={thumbnailUrl}
+                        alt={photoState.title || "Contest photo"}
+                        width={500}
+                        height={500}
+                        className="w-full aspect-square object-cover cursor-pointer hover:opacity-90 transition-opacity"
+                        loading="lazy"
+                    />
+                </Link>
+            </div>
 
             <div className="p-4">
                 <div className="h-12 mb-3">
@@ -196,34 +94,11 @@ export function ImageCard({ photo, contestId, userId }: ImageCardProps) {
                 {error && <p className="text-xs text-red-600 mb-2">{error}</p>}
 
                 <div className="flex gap-3 justify-center items-center">
-                    <VoteButton
-                        type="OVERALL"
-                        voted={photoState.userVoteTypes.OVERALL}
-                        count={photoState.totalVotes.OVERALL}
-                        color="blue"
-                        iconTitle="Overall"
-                        onClick={() => handleVote("OVERALL")}
-                        disabled={voting}
-                    />
-
-                    <VoteButton
-                        type="TECHNICAL"
-                        voted={photoState.userVoteTypes.TECHNICAL}
-                        count={photoState.totalVotes.TECHNICAL}
-                        color="purple"
-                        iconTitle="Technical"
-                        onClick={() => handleVote("TECHNICAL")}
-                        disabled={voting}
-                    />
-
-                    <VoteButton
-                        type="FUNNY"
-                        voted={photoState.userVoteTypes.FUNNY}
-                        count={photoState.totalVotes.FUNNY}
-                        color="amber"
-                        iconTitle="Funny"
-                        onClick={() => handleVote("FUNNY")}
-                        disabled={voting}
+                    <VoteButtonsContainer
+                        photoState={photoState}
+                        voting={voting}
+                        onVote={handleVote}
+                        contestClosed={contestClosed}
                     />
 
                     <div className="relative">

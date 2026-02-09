@@ -133,3 +133,26 @@ export async function loadContestPhotosWithVotes(contestId: string, userId?: str
 
   return photos.map((photo: any) => mapPhotoWithVotes(photo, userId));
 }
+
+export async function getContestInfo(contestId: string) {
+  "use server";
+
+  if (!contestId) {
+    throw new Error("Contest ID is required");
+  }
+
+  const contest = await prisma.contest.findUnique({
+    where: { id: contestId },
+  });
+
+  if (!contest) {
+    throw new Error("Contest not found");
+  }
+
+  return {
+    id: contest.id,
+    name: contest.name,
+    endsAt: contest.endsAt,
+    isClosed: contest.endsAt ? new Date() > contest.endsAt : false,
+  };
+}

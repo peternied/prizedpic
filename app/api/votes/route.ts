@@ -22,6 +22,25 @@ export async function POST(request: Request) {
       );
     }
 
+    // Check if contest has ended
+    const contest = await prisma.contest.findUnique({
+      where: { id: contestId },
+    });
+
+    if (!contest) {
+      return NextResponse.json(
+        { error: "Contest not found" },
+        { status: 404 }
+      );
+    }
+
+    if (contest.endsAt && new Date() > contest.endsAt) {
+      return NextResponse.json(
+        { error: "Voting is closed for this contest" },
+        { status: 403 }
+      );
+    }
+
     // Check if user already voted this way
     const existingVote = await prisma.vote.findUnique({
       where: {
