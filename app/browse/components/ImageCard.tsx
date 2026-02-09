@@ -1,9 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Image from "next/image";
-import Link from "next/link";
-import { Info } from "lucide-react";
+import { Info, X } from "lucide-react";
 import { VoteButtonsContainer, VoteType, PhotoVoteState } from "./VoteButtons";
 
 
@@ -28,6 +27,7 @@ export function ImageCard({ photo, contestId, userId, contestClosed = false }: I
     const [voting, setVoting] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [showDetails, setShowDetails] = useState(false);
+    const [showPhotoViewer, setShowPhotoViewer] = useState(false);
 
     const handleVote = async (voteType: VoteType) => {
         setVoting(true);
@@ -69,10 +69,38 @@ export function ImageCard({ photo, contestId, userId, contestClosed = false }: I
 
     const thumbnailUrl = generateThumbnailUrl(photoState.secureUrl);
 
+    const fullImageUrl = photoState.secureUrl.replace('/upload/', '/upload/q_auto,f_auto/');
+
+    useEffect(() => {
+        if (!showPhotoViewer) {
+            return;
+        }
+
+        const originalOverflow = document.body.style.overflow;
+        document.body.style.overflow = "hidden";
+
+        const onEscape = (event: KeyboardEvent) => {
+            if (event.key === "Escape") {
+                setShowPhotoViewer(false);
+            }
+        };
+
+        window.addEventListener("keydown", onEscape);
+
+        return () => {
+            window.removeEventListener("keydown", onEscape);
+            document.body.style.overflow = originalOverflow;
+        };
+    }, [showPhotoViewer]);
+
     return (
         <div className="rounded-lg border bg-card overflow-hidden shadow-sm hover:shadow-md transition-shadow relative">
             <div className="relative">
-                <Link href={`/browse/${contestId}/${photo.id}`}>
+                <button
+                    type="button"
+                    onClick={() => setShowPhotoViewer(true)}
+                    className="w-full"
+                >
                     <Image
                         src={thumbnailUrl}
                         alt={photoState.title || "Contest photo"}
@@ -81,7 +109,7 @@ export function ImageCard({ photo, contestId, userId, contestClosed = false }: I
                         className="w-full aspect-square object-cover cursor-pointer hover:opacity-90 transition-opacity"
                         loading="lazy"
                     />
-                </Link>
+                </button>
             </div>
 
             <div className="p-4">
@@ -112,7 +140,7 @@ export function ImageCard({ photo, contestId, userId, contestClosed = false }: I
                         </button>
                         
                         {showDetails && (
-                            <div className="absolute bottom-full right-0 mb-2 p-3 bg-white border border-gray-200 rounded-lg shadow-lg text-xs whitespace-nowrap z-10">
+                            <div className="absolute bottom-full right-0 mb-2 p-3 bg-white border border-gray-200 rounded-lg shadow-lg text-xs whitespace-nowrap z-10 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-gray-300">
                                 <div className="font-medium text-gray-900 mb-1">Uploader</div>
                                 <div className="text-gray-600">ID: {photoState.submitterId}</div>
                                 <div className="text-gray-600">{photoState.submitterEmail}</div>
@@ -124,6 +152,53 @@ export function ImageCard({ photo, contestId, userId, contestClosed = false }: I
                     </div>
                 </div>
             </div>
+
+            {showPhotoViewer && (
+                <div className="fixed inset-0 z-50 bg-black/95 flex flex-col items-center justify-center p-4">
+                    <button
+                        onClick={() => setShowPhotoViewer(false)}
+                        className="absolute z-10 top-4 right-4 p-2 rounded-lg bg-white/10 hover:bg-white/20 border border-white/20 transition-colors"
+                        type="button"
+                        title="Close"
+                    >
+                        <X className="w-6 h-6 text-white" />
+                    </button>
+
+                    <div className="relative w-full h-full flex items-center justify-center">
+                        <Image
+                            src={fullImageUrl}
+                            alt={photoState.title || "Contest photo"}
+                            fill
+                            sizes="100vw"
+                            className="object-contain object-center"
+                            priority
+                        />
+                    </div>
+
+                    <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-6 text-white">
+                        <div className="max-w-4xl mx-auto">
+                            <h2 className="text-xl font-semibold mb-3">
+                                {photoState.title || "Untitled"}
+                            </h2>
+
+                            <div className="flex gap-3 items-center mb-3">
+                                <VoteButtonsContainer
+                                    photoState={photoState}
+                                    voting={voting}
+                                    onVote={handleVote}
+                                    variant="dark"
+                                    contestClosed={contestClosed}
+                                />
+                            </div>
+
+                            <div className="text-xs text-white/60">
+                                <div>Uploaded by: {photoState.submitterEmail || "Anonymous"}</div>
+                                <div>{new Date(photoState.submittedAt).toLocaleString()}</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 }
